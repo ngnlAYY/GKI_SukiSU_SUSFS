@@ -1,9 +1,9 @@
 name: 编译内核a13-5-15
 
 permissions:
-  contents: write  # Allow writing to repository contents (for pushing tags)
-  actions: write   # Allows triggering actions
-  
+  contents: write # Allow writing to repository contents (for pushing tags)
+  actions: write # Allows triggering actions
+
 on:
   workflow_dispatch:
     inputs:
@@ -27,41 +27,40 @@ on:
           - Other(其他/指定)
         default: Dev(开发)
       version:
-        description: '自定义版本名(如5.15.167后面的字符/留空则使用默认版本号)'
+        description: "自定义版本名(如5.15.167后面的字符/留空则使用默认版本号)"
         required: false
         type: string
       use_zram:
-        description: '是否开启增加更多ZRAM算法?'
+        description: "是否开启增加更多ZRAM算法?"
         required: true
         type: boolean
         default: true
       use_kpm:
-        description: '是否开启KPM功能?'
+        description: "是否开启KPM功能?"
         required: true
         type: boolean
         default: true
       set_defbbr:
-        description: '是否将BBR设为默认拥塞算法?（实验性）'
+        description: "是否将BBR设为默认拥塞算法?（实验性）"
         required: true
         type: boolean
         default: false
       supp_op:
-        description: '是否开启一加8E处理器机型支持?(非该机型无须勾)'
+        description: "是否开启一加8E处理器机型支持?(非该机型无须勾)"
         required: false
         type: boolean
         default: false
       BBG:
-        description: '是否启用内核层面阻止对关键分区/设备节点的非法写入(LSM)？'
+        description: "是否启用内核层面阻止对关键分区/设备节点的非法写入(LSM)？"
         required: false
         type: boolean
         default: false
       get_manager:
-        description: '是否同时获取最新KSU管理器?（实验性功能，报错请关闭）'
+        description: "是否同时获取最新KSU管理器?（实验性功能，报错请关闭）"
         required: true
         type: boolean
         default: true
 jobs:
-
   build-kernel-a13-5-15:
     uses: ./.github/workflows/kernel-a13-5.15.yml
     secrets: inherit
@@ -80,4 +79,3 @@ jobs:
     secrets: inherit
     with:
       kernelsu_variant: ${{ inputs.kernelsu_variant }}
-

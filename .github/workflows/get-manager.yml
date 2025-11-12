@@ -1,7 +1,7 @@
 name: GetManager
 permissions:
-  contents: write  # Allow writing to repository contents (for pushing tags)
-  actions: read   # Allows triggering actions
+  contents: write # Allow writing to repository contents (for pushing tags)
+  actions: read # Allows triggering actions
 
 on:
   workflow_call: # This allows this workflow to be called from another workflow

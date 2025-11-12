@@ -1,10 +1,10 @@
 name: Android 15 6.6
 permissions:
-  contents: write  # Allow writing to repository contents (for pushing tags)
-  actions: write   # Allows triggering actions
+  contents: write # Allow writing to repository contents (for pushing tags)
+  actions: write # Allows triggering actions
 
 on:
-  workflow_call:  # This allows this workflow to be called from another workflow
+  workflow_call: # This allows this workflow to be called from another workflow
     inputs:
       make_release:
         required: true
@@ -23,26 +23,25 @@ on:
         type: string
         default: ""
       use_zram:
-        description: '是否开启增加更多ZRAM算法?'
+        description: "是否开启增加更多ZRAM算法?"
         required: true
         type: boolean
         default: true
       use_kpm:
-        description: '是否开启KPM功能?'
+        description: "是否开启KPM功能?"
         required: false
         type: boolean
         default: false
       supp_op:
-        description: '是否开启一加8E处理器机型支持?(非该机型无须勾)'
+        description: "是否开启一加8E处理器机型支持?(非该机型无须勾)"
         required: false
         type: boolean
         default: false
       BBG:
-        description: '是否启用内核层面阻止对关键分区/设备节点的非法写入(LSM)？'
+        description: "是否启用内核层面阻止对关键分区/设备节点的非法写入(LSM)？"
         required: true
         type: boolean
         default: false
-
 
 jobs:
   build-kernel-a15-6-6-kernelsu-susfs:

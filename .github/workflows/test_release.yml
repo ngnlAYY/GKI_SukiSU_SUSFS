@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       make_release:
-        description: 'Do you want to create a release?'
+        description: "Do you want to create a release?"
         required: true
         type: boolean
         default: true
@@ -23,37 +23,37 @@ on:
           or "all" to build every kernel.
         required: true
         type: string
-        default: 'all'
+        default: "all"
       kernelsu_variant:
         description: "Select KernelSU"
         required: true
         type: choice
         options:
-        - Official
-        - Next
-        - MKSU
-        - SukiSU
+          - Official
+          - Next
+          - MKSU
+          - SukiSU
         default: SukiSU
       kernelsu_branch:
         description: "Select KSU branch"
         required: true
         type: choice
         options:
-        - Stable(标准)
-        - Dev(开发)
-        - Other(其他/指定)
+          - Stable(标准)
+          - Dev(开发)
+          - Other(其他/指定)
         default: Stable(标准)
       version:
-        description: 'Custom version name (e.g., characters after 5.10.198 / leave blank to use default version number)'
+        description: "Custom version name (e.g., characters after 5.10.198 / leave blank to use default version number)"
         required: false
         type: string
       use_zram:
-        description: 'Enable more ZRAM algorithms?'
+        description: "Enable more ZRAM algorithms?"
         required: true
         type: boolean
         default: true
       use_kpm:
-        description: 'Enable KPM functionality?'
+        description: "Enable KPM functionality?"
         required: true
         type: boolean
         default: true
@@ -63,7 +63,7 @@ on:
         type: boolean
         default: false
       get_manager:
-        description: 'Get the latest KSU Manager at the same time?'
+        description: "Get the latest KSU Manager at the same time?"
         required: true
         type: boolean
         default: false
@@ -174,7 +174,7 @@ jobs:
       SHOULD_RUN_A14_5_15: ${{ contains(github.event.inputs.kernels_to_build, 'all') || contains(github.event.inputs.kernels_to_build, 'a14-5.15') }}
       SHOULD_RUN_A14_6_1: ${{ contains(github.event.inputs.kernels_to_build, 'all') || contains(github.event.inputs.kernels_to_build, 'a14-6.1') }}
       SHOULD_RUN_A15_6_6: ${{ contains(github.event.inputs.kernels_to_build, 'all') || contains(github.event.inputs.kernels_to_build, 'a15-6.6') }}
-      
+
       RESULT_GET_MANAGER: ${{ needs.get_manager.result }}
       RESULT_A12_5_10: ${{ needs.build-kernel-a12-5-10.result }}
       RESULT_A13_5_10: ${{ needs.build-kernel-a13-5-10.result }}
@@ -188,10 +188,10 @@ jobs:
         run: |
           SHOULD_PROCEED="true"
           ERROR_MESSAGE=""
-          
+
           echo "--- Checking Job Statuses ---"
           echo "get_manager result: $RESULT_GET_MANAGER"
-          
+
           # 1. Check get_manager job only if it was supposed to run
           if [[ "${{ inputs.get_manager }}" == "true" ]]; then
             if [[ "$RESULT_GET_MANAGER" != "success" ]]; then
@@ -199,7 +199,7 @@ jobs:
               ERROR_MESSAGE+="get_manager job did not succeed (result: $RESULT_GET_MANAGER). "
             fi
           fi
-          
+
           # Function to check a kernel job
           check_kernel_job() {
             local kernel_id=$1
@@ -220,18 +220,18 @@ jobs:
               fi
             fi
           }
-          
+
           check_kernel_job "a12-5.10" "$SHOULD_RUN_A12_5_10" "$RESULT_A12_5_10"
           check_kernel_job "a13-5.10" "$SHOULD_RUN_A13_5_10" "$RESULT_A13_5_10"
           check_kernel_job "a13-5.15" "$SHOULD_RUN_A13_5_15" "$RESULT_A13_5_15"
           check_kernel_job "a14-5.15" "$SHOULD_RUN_A14_5_15" "$RESULT_A14_5_15"
           check_kernel_job "a14-6.1" "$SHOULD_RUN_A14_6_1" "$RESULT_A14_6_1"
           check_kernel_job "a15-6.6" "$SHOULD_RUN_A15_6_6" "$RESULT_A15_6_6"
-          
+
           echo "Final decision - SHOULD_PROCEED: $SHOULD_PROCEED"
           echo "Accumulated Errors: $ERROR_MESSAGE"
           echo "should_release=$SHOULD_PROCEED" >> "$GITHUB_OUTPUT"
-          
+
           if [[ "$SHOULD_PROCEED" == "false" ]]; then
             echo "::error::Release blocked due to issues: $ERROR_MESSAGE"
             exit 1
@@ -252,7 +252,7 @@ jobs:
       RELEASE_NAME: "GKI Kernel: ${{ inputs.kernelsu_variant == 'Next' && 'KernelSU-' || '' }} ${{ inputs.kernelsu_variant }}"
       INITIAL_RELEASE_NOTES: |
         This release includes **${{ inputs.kernelsu_variant == 'Next' && 'KernelSU' || '' }}${{ inputs.kernelsu_variant }}**
-        
+
         Features:
         -> ${{ inputs.kernelsu_variant == 'Next' && 'KernelSU-' || '' }}${{ inputs.kernelsu_variant }}-${{ inputs.kernelsu_branch }}
         -> SUSFS ඞ v1.5.12
@@ -266,13 +266,13 @@ jobs:
         -> BBG ${{ inputs.BBG && 'supported' || 'not supported' }}
         ${{ inputs.use_kpm && '-> KPM Support' || '' }}
         -> **LZ4KD&ONEPLUS_LZ4K** ${{ inputs.use_zram && 'supported' || 'not supported' }}
-        
+
         <details>
         <summary>Notes:</summary>
         - -> In SUS SU Mode 2, it will show as disabled or incompatible, the reason is that non-kprobe hooks were used (when compiling the kernel), and non-kprobe hooks are no longer needed!
         - -> In the latest version of susfs, flashing AK3 compressed package with Kernel Flasher will brick your device, try [Horizon Kernel Flasher]\(https://github.com/libxzr/HorizonKernelFlasher)!
         </details>
-        
+
         Modules:
         -> https://github.com/sidex15/ksu_module_susfs
     steps:
@@ -280,11 +280,11 @@ jobs:
         id: release_check
         if: ${{ inputs.make_release && needs.check-build-status.outputs.should_release == 'true' }}
         run: echo "Release conditions met. Proceeding with release."
-        
+
       - name: Checkout code
         if: ${{ steps.release_check.outcome == 'success' }}
         uses: actions/checkout@v4
-        
+
       - name: Install GitHub CLI
         if: ${{ steps.release_check.outcome == 'success' }}
         run: |
@@ -292,7 +292,7 @@ jobs:
             sudo apt update
             sudo apt install -y gh
           }
-          
+
       - name: Generate and Create New Tag (Atomic)
         if: ${{ steps.release_check.outcome == 'success' }}
         env:
@@ -301,7 +301,7 @@ jobs:
           set -e
 
           BASE_VERSION="v1.5.12"
-          
+
           # Fetch all existing tags using git ls-remote
           EXISTING_TAGS=$(git ls-remote --tags https://github.com/$REPO_OWNER/$REPO_NAME.git | awk '{print $2}' | sed 's/refs\/tags\///' || true)
 
@@ -337,8 +337,8 @@ jobs:
           git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
           git push origin "$NEW_TAG"
 
-          echo "Tag $NEW_TAG created and pushed successfully" 
-          
+          echo "Tag $NEW_TAG created and pushed successfully"
+
       - name: Set KSU Version and Release Name
         if: ${{ steps.release_check.outcome == 'success' }}
         run: |
@@ -369,7 +369,7 @@ jobs:
             echo "Using default naming for variant: ${{ inputs.kernelsu_variant }}"
             echo "RELEASE_NAME=\"GKI Kernel: ${{ inputs.kernelsu_variant }} & SUSFS v1.5.12\"" >> $GITHUB_ENV
           fi
-          
+
       - name: Fetch KSU and SUSFS Commit Info
         id: build_notes
         if: ${{ steps.release_check.outcome == 'success' }}
@@ -407,9 +407,9 @@ jobs:
               KSU_BRANCH="main"
             fi
           fi
-          
+
           echo "KSU_BRANCH=$KSU_BRANCH" >> $GITHUB_ENV
-          
+
           KSU_REPO_URL=""
           KSU_REPO_URL2=""
           if [ "${{ inputs.kernelsu_variant }}" == "Official" ]; then
@@ -429,7 +429,7 @@ jobs:
             KSU_REPO_URL="https://github.com/tiann/KernelSU.git"
             KSU_REPO_URL2="tiann/KernelSU"
           fi
-          
+
           KSU_REF=""
           KSU_URL=""
           if [[ "${{ inputs.kernelsu_branch }}" == "Stable(标准)" && "${{ inputs.kernelsu_variant }}" != "MKSU" ]]; then
@@ -443,9 +443,9 @@ jobs:
           else
             echo "Error: KSU branch could not be determined. KSU commit information will be incomplete." >&2
           fi
-          
+
           FINAL_RELEASE_NOTES="${{ env.INITIAL_RELEASE_NOTES }}"
-          
+
           if [ "${{ inputs.kernelsu_variant }}" == "Official" ]; then
             FINAL_RELEASE_NOTES+="\nOfficial Manager:\n-> https://github.com/tiann/KernelSU"
           elif [ "${{ inputs.kernelsu_variant }}" == "Next" ]; then
@@ -455,17 +455,17 @@ jobs:
           elif [ "${{ inputs.kernelsu_variant }}" == "SukiSU" ]; then
             FINAL_RELEASE_NOTES+="\nSukiSU Manager:\n-> https://github.com/ShirkNeko/SukiSU-Ultra"
           fi
-          
+
           FINAL_RELEASE_NOTES+="\n\nLTO: thin"
           FINAL_RELEASE_NOTES+="\n\n<details>"
           FINAL_RELEASE_NOTES+="\n<summary>Commit Information</summary>"
           FINAL_RELEASE_NOTES+="\n\nCommit hashes and links (the following commits refer to the progress of KSU or SUSFS at the time of this compilation):"
           FINAL_RELEASE_NOTES+="\n- **KernelSU is ${{ inputs.kernelsu_variant }}-${KSU_BRANCH}** (Commit): [${KSU_REF}](${KSU_URL})"
           FINAL_RELEASE_NOTES+="\n- **SUSFS4KSU** (Commit):"
-          
+
           GITLAB_OWNER="simonpunk"
           GITLAB_REPO="susfs4ksu"
-          
+
           declare -A BRANCH_MAP=(
             ["a12-5.10"]="gki-android12-5.10"
             ["a13-5.10"]="gki-android13-5.10"
@@ -474,7 +474,7 @@ jobs:
             ["a14-6.1"]="gki-android14-6.1"
             ["a15-6.6"]="gki-android15-6.6"
           )
-          
+
           declare -a KERNELS_TO_FETCH_SUSFS
           if [[ "${{ inputs.kernels_to_build }}" == "all" ]]; then
             for key in "${!BRANCH_MAP[@]}"; do
@@ -509,7 +509,7 @@ jobs:
 
           mapfile -t SORTED_KERNELS < <(printf '%s\n' "${KERNELS_TO_FETCH_SUSFS[@]}" | sort)
           KERNELS_TO_FETCH_SUSFS=("${SORTED_KERNELS[@]}")
-          
+
           for kernel_id in "${KERNELS_TO_FETCH_SUSFS[@]}"; do
             susfs_branch_name="${BRANCH_MAP[$kernel_id]}"
             if [[ -n "$susfs_branch_name" ]]; then
@@ -521,36 +521,36 @@ jobs:
               echo "Warning: SUSFS branch name not found for kernel ID: $kernel_id. Cannot fetch commit info." >&2
             fi
           done
-          
+
           FINAL_RELEASE_NOTES+="\n\n</details>"
-          
+
           echo "FULL_RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo -e "$FINAL_RELEASE_NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          
+
       - name: Download Artifacts
         if: ${{ steps.release_check.outcome == 'success' }}
         uses: actions/download-artifact@v4
         with:
           path: release-artifacts-${{ github.run_id }}
-          
+
       - name: Prepare Artifacts for Upload
         if: ${{ steps.release_check.outcome == 'success' }}
         run: |
           # Create a new directory for release assets
           mkdir -p release-assets
-          
+
           # Find and copy all artifacts to a flat directory structure
           find ./release-artifacts-${{ github.run_id }} -type f -exec cp -v {} ./release-assets \;
-          
+
           # Generate checksums
           cd release-assets
           sha256sum * > SHA256SUMS.txt
           cd ..
-          
+
           echo "Artifacts prepared for upload:"
           ls -lh ./release-assets
-          
+
       - name: Create GitHub Release
         if: ${{ steps.release_check.outcome == 'success' }}
         uses: actions/create-release@v1
@@ -560,22 +560,22 @@ jobs:
           release_name: ${{ env.RELEASE_NAME }}
           body: ${{ env.FULL_RELEASE_NOTES }}
           token: ${{ secrets.MY_GITHUB_TOKEN }}
-          
+
       - name: Upload Release Assets
         if: ${{ steps.release_check.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         run: |
           echo "Uploading release assets..."
-          
+
           # Upload all files in the release-assets directory
           for file in ./release-assets/*; do
             echo "Uploading $file"
             gh release upload "${{ env.NEW_TAG }}" "$file" || echo "Failed to upload $file"
           done
-          
+
           echo "Upload completed!"
-          
+
       - name: Verify Uploaded Assets
         if: ${{ steps.release_check.outcome == 'success' }}
         run: |
@@ -588,9 +588,9 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_MESSAGE_THREAD_ID: ${{ secrets.TELEGRAM_MESSAGE_THREAD_ID }}
         run: |
-            curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
-            -d "chat_id=$TELEGRAM_CHAT_ID" \
-            -d "message_thread_id=$TELEGRAM_MESSAGE_THREAD_ID" \
-            -d "text=Latest release: 
-            https://github.com/ShirkNeko/GKI_KernelSU_SUSFS/releases/tag/${{ env.NEW_TAG }}
-            ${{ env.RELEASE_NOTES }}"    
+          curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" \
+          -d "chat_id=$TELEGRAM_CHAT_ID" \
+          -d "message_thread_id=$TELEGRAM_MESSAGE_THREAD_ID" \
+          -d "text=Latest release: 
+          https://github.com/ShirkNeko/GKI_KernelSU_SUSFS/releases/tag/${{ env.NEW_TAG }}
+          ${{ env.RELEASE_NOTES }}"
